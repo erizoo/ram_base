@@ -7,6 +7,7 @@ import by.boiko.crm.model.User;
 import by.boiko.crm.service.UserService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -180,9 +182,10 @@ public class UserServiceImpl implements UserService {
                 String context = getTextFromMimeMultipart((MimeMultipart) content);
                 emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
                 String lines[] = emailList.get(0).getSubject().split("\\r?\\n");
-                System.out.println(Arrays.toString(lines));
-                orderList.add(new Order(nameToFormat(lines[5]),phoneNumberFormat(lines[6]),emailToFormat(lines[7]),
-                        addressToFormat(lines[8]),orderToFormat(lines[13]),priceToFormat(lines[14])));
+//                System.out.println(Arrays.toString(lines));
+                orderToFormat(lines);
+//                orderList.add(new Order(nameToFormat(lines[5]),phoneNumberFormat(lines[6]),emailToFormat(lines[7]),
+//                        addressToFormat(lines[8]),orderToFormat(lines[13]),priceToFormat(lines[14])));
             }
             emailFolder.close(false);
             store.close();
@@ -226,19 +229,16 @@ public class UserServiceImpl implements UserService {
         return lines[5];
     }
 
-    private String orderToFormat(String line) {
-        String[] lines = line.split(" ");
-        final List<String> list =  new ArrayList<String>();
-        Collections.addAll(list, lines);
-        list.remove("1.");
-        list.remove("//");
-        list.remove(",");
-        lines = list.toArray(new String[list.size()]);
-        String item = Arrays.toString(lines);
-        String result = item.substring(1,item.length()-1);
-        String str = result.replace(",","");
-        System.out.println(str);
-        return str;
+    private List<String> orderToFormat(String[] line) {
+        List<String> lines =  Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.") ).collect(Collectors.toList());
+        String[] items = String.valueOf(list).split(",");
+        System.out.println(Arrays.toString(items));
+        List<String> arrayList = Arrays.asList(items);
+        String name = String.valueOf(items[0].split("//"));
+        List<String> nameList = arrayList.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.") ).collect(Collectors.toList());
+        System.out.println(nameList);
+        return lines;
     }
 
     private String phoneNumberFormat(String line) {

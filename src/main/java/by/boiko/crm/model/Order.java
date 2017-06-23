@@ -1,24 +1,34 @@
 package by.boiko.crm.model;
 
+import java.util.List;
+
 public class Order {
 
     private String name;
     private String number;
     private String email;
     private String address;
-    private String nameProduct;
+    private List<Product> nameProduct;
     private String priceProduct;
 
     public Order() {
     }
 
-    public Order(String name, String number, String email, String address, String nameProduct, String priceProduct) {
+    public Order(String name, String number, String email, String address, List<Product> nameProduct, String priceProduct) {
         this.name = name;
         this.number = number;
         this.email = email;
         this.address = address;
         this.nameProduct = nameProduct;
         this.priceProduct = priceProduct;
+    }
+
+    public List<Product> getNameProduct() {
+        return nameProduct;
+    }
+
+    public void setNameProduct(List<Product> nameProduct) {
+        this.nameProduct = nameProduct;
     }
 
     public String getName() {
@@ -51,14 +61,6 @@ public class Order {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getNameProduct() {
-        return nameProduct;
-    }
-
-    public void setNameProduct(String nameProduct) {
-        this.nameProduct = nameProduct;
     }
 
     public String getPriceProduct() {
