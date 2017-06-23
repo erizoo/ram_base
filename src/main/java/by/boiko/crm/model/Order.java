@@ -9,18 +9,16 @@ public class Order {
     private String email;
     private String address;
     private List<Product> nameProduct;
-    private String priceProduct;
 
     public Order() {
     }
 
-    public Order(String name, String number, String email, String address, List<Product> nameProduct, String priceProduct) {
+    public Order(String name, String number, String email, String address, List<Product> nameProduct) {
         this.name = name;
         this.number = number;
         this.email = email;
         this.address = address;
         this.nameProduct = nameProduct;
-        this.priceProduct = priceProduct;
     }
 
     public List<Product> getNameProduct() {
@@ -63,11 +61,4 @@ public class Order {
         this.address = address;
     }
 
-    public String getPriceProduct() {
-        return priceProduct;
-    }
-
-    public void setPriceProduct(String priceProduct) {
-        this.priceProduct = priceProduct;
-    }
 }
