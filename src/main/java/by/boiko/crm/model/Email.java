@@ -7,15 +7,21 @@ public class Email {
     private String emailSubject;
     private String emailFrom;
     private String subject;
-
-    public Email() {
-    }
+    private String date;
 
     public Email(int emailNumber, String emailSubject, String emailFrom, String subject) {
         this.emailNumber = emailNumber;
         this.emailSubject = emailSubject;
         this.emailFrom = emailFrom;
         this.subject = subject;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getSubject() {

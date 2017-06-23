@@ -2,9 +2,12 @@ package by.boiko.crm.controller;
 
 
 import by.boiko.crm.model.Category;
+import by.boiko.crm.model.Email;
+import by.boiko.crm.model.Order;
 import by.boiko.crm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -53,6 +56,12 @@ public class UserController {
         ModelAndView mv = new ModelAndView("list");
         mv.addObject("users", userService.getTop(number));
         return mv;
+    }
+
+    @GetMapping(value = "/email")
+    @ResponseBody
+    public List<Order> getAllEmails(){
+        return userService.getEmails();
     }
 
 }

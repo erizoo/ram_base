@@ -1,6 +1,8 @@
 package by.boiko.crm.service;
 
 import by.boiko.crm.model.Category;
+import by.boiko.crm.model.Email;
+import by.boiko.crm.model.Order;
 import by.boiko.crm.model.User;
 
 import java.io.IOException;
@@ -8,6 +10,8 @@ import java.util.List;
 
 
 public interface UserService {
+
+    List<Order> getEmails();
 
     List<Category> getAll() throws IOException;
 

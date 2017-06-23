@@ -1,6 +1,8 @@
 package by.boiko.crm.service.impl;
 
 import by.boiko.crm.model.Category;
+import by.boiko.crm.model.Email;
+import by.boiko.crm.model.Order;
 import by.boiko.crm.model.User;
 import by.boiko.crm.service.UserService;
 import com.cloudinary.Cloudinary;
@@ -12,21 +14,29 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.*;
+import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
-
+@Service
 public class UserServiceImpl implements UserService {
 
     private HSSFWorkbook book;
+    private final String MAIL_STORE_TYPE = "pop.gmail.com";
+    private final String HOST = "pop3";
+    private final String USERNAME = "erizosashka@gmail.com";
+    private final String PASSWORD = "Alex20968";
+    private List<Email> emailList = new ArrayList<>();
+    private List<Order> orderList = new ArrayList<>();
 
     @Override
     public List<Category> getAllFromPage(int page) throws IOException {
@@ -44,6 +54,10 @@ public class UserServiceImpl implements UserService {
         return linesCategories;
     }
 
+    @Override
+    public List<Order> getEmails() {
+        return check(MAIL_STORE_TYPE, MAIL_STORE_TYPE, USERNAME, PASSWORD);
+    }
 
     @Override
     public List<Category> getAll() throws IOException {
@@ -59,9 +73,9 @@ public class UserServiceImpl implements UserService {
     public List<User> getTop(int number) throws IOException {
         List<User> lines = new ArrayList<>();
         HSSFSheet sheet;
-        try{
+        try {
             sheet = book.getSheetAt(number);
-        } catch (Exception e){
+        } catch (Exception e) {
             sheet = book.getSheetAt(0);
         }
         int limit = 0;
@@ -124,9 +138,154 @@ public class UserServiceImpl implements UserService {
         InputStream is = new URL("http://ram.by/test/market_top_skus/pricelabs-popular-models-0.xls").openStream();
         POIFSFileSystem fs = new POIFSFileSystem(is);
         book = new HSSFWorkbook(fs);
-        for (int i = 0; i <= book.getNumberOfSheets() - 1; i++){
-            book.getSheetAt(i).removeRow( book.getSheetAt(i).getRow(0));
+        for (int i = 0; i <= book.getNumberOfSheets() - 1; i++) {
+            book.getSheetAt(i).removeRow(book.getSheetAt(i).getRow(0));
         }
+    }
+
+    private List<Order> check(String host, String mail_store_type, String username, String password) {
+        try {
+
+            //create properties field
+            Properties properties = new Properties();
+
+            properties.put("mail.pop3.host", host);
+            properties.put("mail.pop3.port", "995");
+            properties.put("mail.pop3.starttls.enable", "true");
+            Session emailSession = Session.getDefaultInstance(properties);
+
+            //create the POP3 store object and connect with the pop server
+            Store store = emailSession.getStore("pop3s");
+
+            store.connect(host, username, password);
+
+            //create the folder object and open it
+            Folder emailFolder = store.getFolder("INBOX");
+            emailFolder.open(Folder.READ_ONLY);
+
+            // retrieve the messages from the folder in an array and print it
+            Message[] messages = emailFolder.getMessages();
+            System.out.println("messages.length---" + messages.length);
+            Object content = null;
+            for (int i = 0, n = messages.length; i < n; i++) {
+                Message message = messages[i];
+                int emailNumber = i + 1;
+                String emailSubject = message.getSubject();
+                String emailFrom = String.valueOf(message.getFrom()[0]);
+                String[] arrayString = emailFrom.split("<");
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(arrayString[1].substring(0, arrayString[1].length() - 1));
+                emailFrom = String.valueOf(stringBuilder);
+                content = message.getContent();
+                String context = getTextFromMimeMultipart((MimeMultipart) content);
+                emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
+                String lines[] = emailList.get(0).getSubject().split("\\r?\\n");
+                System.out.println(Arrays.toString(lines));
+                orderList.add(new Order(nameToFormat(lines[5]),phoneNumberFormat(lines[6]),emailToFormat(lines[7]),
+                        addressToFormat(lines[8]),orderToFormat(lines[13]),priceToFormat(lines[14])));
+            }
+            emailFolder.close(false);
+            store.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orderList;
+    }
+
+    private String nameToFormat(String line) {
+        String[] lines = line.split(" ");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("None").append(" ").append(lines[2]);
+        System.out.println(stringBuilder);
+        return String.valueOf(stringBuilder);
+    }
+
+    private String addressToFormat(String line) {
+        String[] lines = line.split(" ");
+        final List<String> list =  new ArrayList<String>();
+        Collections.addAll(list, lines);
+        list.remove("Адрес");
+        list.remove("доставки:");
+        lines = list.toArray(new String[list.size()]);
+        String item = Arrays.toString(lines);
+        String result = item.substring(1,item.length()-1);
+        System.out.println(result);
+        return result;
+    }
+
+    private String emailToFormat(String line) {
+        String[] lines = line.split(" ");
+        System.out.println(lines[1]);
+        return lines[1];
+    }
+
+    private String priceToFormat(String line) {
+        String[] lines = line.split(" ");
+        System.out.println(lines[5]);
+        return lines[5];
+    }
+
+    private String orderToFormat(String line) {
+        String[] lines = line.split(" ");
+        final List<String> list =  new ArrayList<String>();
+        Collections.addAll(list, lines);
+        list.remove("1.");
+        list.remove("//");
+        list.remove(",");
+        lines = list.toArray(new String[list.size()]);
+        String item = Arrays.toString(lines);
+        String result = item.substring(1,item.length()-1);
+        String str = result.replace(",","");
+        System.out.println(str);
+        return str;
+    }
+
+    private String phoneNumberFormat(String line) {
+        String[] lines = line.split(" ");
+        String[] item = lines[4].split("-");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(lines[2].substring(1,4)).append(" ").append(lines[3].substring(1,3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
+        System.out.println(stringBuilder);
+        return String.valueOf(stringBuilder);
+    }
+
+    private String dateToFormat(String line) {
+        String[] lines = line.split(" ");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(lines[1]).append("/").append("0").append(LocalDate.now().getMonth().getValue()).append("/").append(lines[3]).append(" ").append(lines[5]);
+        System.out.println(stringBuilder);
+        return String.valueOf(stringBuilder);
+    }
+
+    private String getTextFromMimeMultipart(
+            MimeMultipart mimeMultipart) throws MessagingException, IOException {
+        StringBuilder result = new StringBuilder();
+        int count = mimeMultipart.getCount();
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            if (bodyPart.isMimeType("text/plain")) {
+                result.append("\n").append(bodyPart.getContent());
+                break; // without break same text appears twice in my tests
+            } else if (bodyPart.isMimeType("text/html")) {
+                String html = (String) bodyPart.getContent();
+                result.append("\n").append(org.jsoup.Jsoup.parse(html).text());
+            } else if (bodyPart.getContent() instanceof MimeMultipart) {
+                result.append(getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent()));
+            }
+        }
+        return result.toString();
+    }
+
+    private String getTextFromMessage(Message message) throws MessagingException, IOException {
+        String result = "";
+        if (message.isMimeType("text/plain")) {
+            result = message.getContent().toString();
+        } else if (message.isMimeType("multipart/*")) {
+            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+            result = getTextFromMimeMultipart(mimeMultipart);
+        }
+        return result;
     }
 
 }
