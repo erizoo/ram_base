@@ -29,6 +29,12 @@ public class UserServiceImpl implements UserService {
     private List<Email> emailList = new ArrayList<>();
     private List<Order> orderList = new ArrayList<>();
     private List<Product> productList = new ArrayList<>();
+    private List<String> nameItemList = new ArrayList<>();
+    private List<String> priceItemList = new ArrayList<>();
+    private List<String> amountItemList = new ArrayList<>();
+    private List<String> nameItemListTest = new ArrayList<>();
+    private List<String> amountItemListTest = new ArrayList<>();
+    private List<String> priceItemListTest = new ArrayList<>();
 
     @Override
     public List<Category> getAllFromPage(int page) throws IOException {
@@ -137,7 +143,7 @@ public class UserServiceImpl implements UserService {
 
     private List<Order> check(String host, String mail_store_type, String username, String password) {
         try {
-
+            orderList.clear();
             //create properties field
             Properties properties = new Properties();
 
@@ -221,29 +227,34 @@ public class UserServiceImpl implements UserService {
         productList.clear();
         List<String> lines = Arrays.asList(line);
         List<String> list = lines.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.")).collect(Collectors.toList());
-        String[] items = String.valueOf(list).split(",");
-        List<String> nameItemList = new ArrayList<>();
-        List<String> priceItemList = new ArrayList<>();
-        List<String> amountItemList = new ArrayList<>();
-        List<String> nameItemListTest = new ArrayList<>();
-        List<String> amountItemListTest = new ArrayList<>();
-        List<String> priceItemListTest = new ArrayList<>();
-        for (int i = 0; i <= items.length - 1; i++) {
-            String[] firstItem = items[i].split("//");
-            nameItemList.add(firstItem[0]);
-            amountItemList.add(firstItem[1]);
-            priceItemList.add(firstItem[2]);
+        String[] check = String.valueOf(list).split("//");
+        if (check.length > 3){
+            String[] items = String.valueOf(list).split(",");
+            for (int i = 0; i <= items.length - 1; i++) {
+                String[] firstItem = items[i].split("//");
+                nameItemList.add(firstItem[0]);
+                amountItemList.add(firstItem[1]);
+                priceItemList.add(firstItem[2]);
+            }
+            for (int i = 0; i <= items.length - 1; i++) {
+                String[] priceString = priceItemList.get(i).split(" ");
+                priceItemListTest.add(priceString[2]);
+                String[] amountString = amountItemList.get(i).split(" ");
+                amountItemListTest.add(amountString[2]);
+                String[] nameString = nameItemList.get(i).split(",");
+                String[] nameItem = nameString[0].split("\\.");
+                nameItemListTest.add(nameItem[1]);
+                productList.add(new Product(nameItemListTest.get(i), priceItemListTest.get(i), amountItemListTest.get(i)));
+            }
+        }else {
+            String[] items = String.valueOf(list).split("//");
+            String nameItem = items[0].substring(4,items[0].length()-1);
+            String[] amountItem = items[1].split(" ");
+            String amountItemTest = amountItem[2];
+            String[] priceItem = items[2].split(" ");
+            productList.add(new Product(nameItem, priceItem[2], amountItemTest));
         }
-        for (int i = 0; i <= items.length - 1; i++) {
-            String[] priceString = priceItemList.get(i).split(" ");
-            priceItemListTest.add(priceString[2]);
-            String[] amountString = amountItemList.get(i).split(" ");
-            amountItemListTest.add(amountString[2]);
-            String[] nameString = nameItemList.get(i).split(",");
-            String[] nameItem = nameString[0].split("\\.");
-            nameItemListTest.add(nameItem[1]);
-            productList.add(new Product(nameItemListTest.get(i), priceItemListTest.get(i), amountItemListTest.get(i)));
-        }
+
         return productList;
     }
 
