@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final String PASSWORD = "Alex20968";
     private List<Email> emailList = new ArrayList<>();
     private List<Order> orderList = new ArrayList<>();
-    private List<Product> productList = new ArrayList<>();
     private List<String> nameItemList = new ArrayList<>();
     private List<String> priceItemList = new ArrayList<>();
     private List<String> amountItemList = new ArrayList<>();
@@ -224,10 +223,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private List<Product> orderToFormat(String[] line) {
-        productList.clear();
         List<String> lines = Arrays.asList(line);
         List<String> list = lines.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.")).collect(Collectors.toList());
         String[] check = String.valueOf(list).split("//");
+        List<Product> productList = new ArrayList<>();
         if (check.length > 3){
             String[] items = String.valueOf(list).split(",");
             for (int i = 0; i <= items.length - 1; i++) {
@@ -244,6 +243,7 @@ public class UserServiceImpl implements UserService {
                 String[] nameString = nameItemList.get(i).split(",");
                 String[] nameItem = nameString[0].split("\\.");
                 nameItemListTest.add(nameItem[1]);
+
                 productList.add(new Product(nameItemListTest.get(i), priceItemListTest.get(i), amountItemListTest.get(i)));
             }
         }else {
