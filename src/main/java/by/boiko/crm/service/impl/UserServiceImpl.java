@@ -171,10 +171,9 @@ public class UserServiceImpl implements UserService {
                 content = message.getContent();
                 String context = getTextFromMimeMultipart((MimeMultipart) content);
                 emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
-                String lines[] = emailList.get(0).getSubject().split("\\r?\\n");
-                orderList.clear();
-                orderList.add(new Order(nameToFormat(lines[5]),phoneNumberFormat(lines[6]),emailToFormat(lines[7]),
-                        addressToFormat(lines[8]),orderToFormat(lines)));
+                String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
+                orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
+                        addressToFormat(lines[8]), orderToFormat(lines)));
             }
             emailFolder.close(false);
             store.close();
@@ -195,13 +194,13 @@ public class UserServiceImpl implements UserService {
 
     private String addressToFormat(String line) {
         String[] lines = line.split(" ");
-        final List<String> list =  new ArrayList<String>();
+        final List<String> list = new ArrayList<String>();
         Collections.addAll(list, lines);
         list.remove("Адрес");
         list.remove("доставки:");
         lines = list.toArray(new String[list.size()]);
         String item = Arrays.toString(lines);
-        String result = item.substring(1,item.length()-1);
+        String result = item.substring(1, item.length() - 1);
         System.out.println(result);
         return result;
     }
@@ -219,8 +218,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private List<Product> orderToFormat(String[] line) {
-        List<String> lines =  Arrays.asList(line);
-        List<String> list = lines.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.") ).collect(Collectors.toList());
+        productList.clear();
+        List<String> lines = Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.")).collect(Collectors.toList());
         String[] items = String.valueOf(list).split(",");
         List<String> nameItemList = new ArrayList<>();
         List<String> priceItemList = new ArrayList<>();
@@ -228,13 +228,13 @@ public class UserServiceImpl implements UserService {
         List<String> nameItemListTest = new ArrayList<>();
         List<String> amountItemListTest = new ArrayList<>();
         List<String> priceItemListTest = new ArrayList<>();
-        for (int i = 0; i <= items.length - 1; i++){
-            String [] firstItem = items[i].split("//");
+        for (int i = 0; i <= items.length - 1; i++) {
+            String[] firstItem = items[i].split("//");
             nameItemList.add(firstItem[0]);
             amountItemList.add(firstItem[1]);
             priceItemList.add(firstItem[2]);
         }
-        for (int i = 0; i <= items.length - 1; i++){
+        for (int i = 0; i <= items.length - 1; i++) {
             String[] priceString = priceItemList.get(i).split(" ");
             priceItemListTest.add(priceString[2]);
             String[] amountString = amountItemList.get(i).split(" ");
@@ -251,7 +251,7 @@ public class UserServiceImpl implements UserService {
         String[] lines = line.split(" ");
         String[] item = lines[4].split("-");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(lines[2].substring(1,4)).append(" ").append(lines[3].substring(1,3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
+        stringBuilder.append(lines[2].substring(1, 4)).append(" ").append(lines[3].substring(1, 3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
         System.out.println(stringBuilder);
         return String.valueOf(stringBuilder);
     }
