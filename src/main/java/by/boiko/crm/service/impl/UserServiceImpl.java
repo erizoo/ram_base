@@ -191,10 +191,15 @@ public class UserServiceImpl implements UserService {
 
     private String nameToFormat(String line) {
         String[] lines = line.split(" ");
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("None").append(" ").append(lines[2]);
-        System.out.println(stringBuilder);
-        return String.valueOf(stringBuilder);
+        if (lines.length <= 3){
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("None").append(" ").append(lines[2]);
+            return String.valueOf(stringBuilder);
+        }else {
+            StringBuilder stringBuilder = new StringBuilder();
+            return String.valueOf(stringBuilder.append(lines[2]).append(" ").append(lines[3]));
+        }
+
     }
 
     private String addressToFormat(String line) {
