@@ -23,7 +23,6 @@ public class UserServiceImpl implements UserService {
 
     private HSSFWorkbook book;
     private final String MAIL_STORE_TYPE = "pop.gmail.com";
-    private final String HOST = "pop3";
     private final String USERNAME = "erizosashka@gmail.com";
     private final String PASSWORD = "Alex20968";
     private List<Email> emailList = new ArrayList<>();
@@ -142,7 +141,7 @@ public class UserServiceImpl implements UserService {
 
     private List<Order> check(String host, String mail_store_type, String username, String password) {
         try {
-
+            orderList.clear();
             //create properties field
             Properties properties = new Properties();
 
@@ -177,8 +176,15 @@ public class UserServiceImpl implements UserService {
                 String context = getTextFromMimeMultipart((MimeMultipart) content);
                 emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
                 String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
-                orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
-                        addressToFormat(lines[8]), orderToFormat(lines)));
+                orderList.add(new Order(nameToFormatCall(lines[5]), phoneNumberFormatCall(lines[6]),productToFormatCall(lines[8])));
+//                if (emailSubject.contains("Поступил заказ на звонок")) {
+//                    orderList.add(new Order("gsgs", "dsgsdg","sgsdg"));
+//
+//
+//                } else {
+//                    orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
+//                            addressToFormat(lines[8]), orderToFormat(lines)));
+//                }
             }
             emailFolder.close(false);
             store.close();
@@ -192,13 +198,31 @@ public class UserServiceImpl implements UserService {
         return orderList;
     }
 
+    private String nameToFormatCall(String line) {
+        String items[] = line.split(" ");
+        return items[2];
+    }
+
+    private String phoneNumberFormatCall(String line) {
+        String[] lines = line.split(" ");
+        String[] item = lines[5].split("-");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(lines[3].substring(1, 4)).append(" ").append(lines[4].substring(1, 3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
+        return String.valueOf(stringBuilder);
+    }
+
+    private String productToFormatCall(String line) {
+        String[] lines = line.split("\"");
+        return lines[1];
+    }
+
     private String nameToFormat(String line) {
         String[] lines = line.split(" ");
-        if (lines.length <= 3){
+        if (lines.length <= 3) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("None").append(" ").append(lines[2]);
             return String.valueOf(stringBuilder);
-        }else {
+        } else {
             StringBuilder stringBuilder = new StringBuilder();
             return String.valueOf(stringBuilder.append(lines[2]).append(" ").append(lines[3]));
         }
@@ -224,18 +248,12 @@ public class UserServiceImpl implements UserService {
         return lines[1];
     }
 
-    private String priceToFormat(String line) {
-        String[] lines = line.split(" ");
-        System.out.println(lines[5]);
-        return lines[5];
-    }
-
     private List<Product> orderToFormat(String[] line) {
         List<String> lines = Arrays.asList(line);
         List<String> list = lines.stream().filter(p -> p.contains("1.") | p.contains("2.") | p.contains("3.") | p.contains("4.")).collect(Collectors.toList());
         String[] check = String.valueOf(list).split("//");
         List<Product> productList = new ArrayList<>();
-        if (check.length > 3){
+        if (check.length > 3) {
             String[] items = String.valueOf(list).split(",");
             for (int i = 0; i <= items.length - 1; i++) {
                 String[] firstItem = items[i].split("//");
@@ -254,9 +272,9 @@ public class UserServiceImpl implements UserService {
 
                 productList.add(new Product(nameItemListTest.get(i), priceItemListTest.get(i), amountItemListTest.get(i)));
             }
-        }else {
+        } else {
             String[] items = String.valueOf(list).split("//");
-            String nameItem = items[0].substring(4,items[0].length()-1);
+            String nameItem = items[0].substring(4, items[0].length() - 1);
             String[] amountItem = items[1].split(" ");
             String amountItemTest = amountItem[2];
             String[] priceItem = items[2].split(" ");
@@ -301,16 +319,4 @@ public class UserServiceImpl implements UserService {
         }
         return result.toString();
     }
-
-    private String getTextFromMessage(Message message) throws MessagingException, IOException {
-        String result = "";
-        if (message.isMimeType("text/plain")) {
-            result = message.getContent().toString();
-        } else if (message.isMimeType("multipart/*")) {
-            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
-            result = getTextFromMimeMultipart(mimeMultipart);
-        }
-        return result;
-    }
-
 }

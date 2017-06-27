@@ -21,7 +21,7 @@
     </form>
     <form action="${loginUrlGmail}" method="get">
         <br>
-        <button class="btn btn-lg btn-danger btn-block" onclick="location.href='${loginUrl}'">Парсер Gmail</button>
+        <button class="btn btn-lg btn-danger btn-block" onclick="location.href='${loginUrlGmail}'">Парсер Gmail</button>
     </form>
 </div>
 </body>

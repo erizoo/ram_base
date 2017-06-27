@@ -10,12 +10,19 @@ public class Order {
     private String address;
     private List<Product> nameProduct;
     private String error;
+    private String nameProductCall;
 
     public Order() {
     }
 
     public Order(String error) {
         this.error = error;
+    }
+
+    public Order(String name, String number, String nameProductCall) {
+        this.name = name;
+        this.number = number;
+        this.nameProductCall = nameProductCall;
     }
 
     public Order(String name, String number, String email, String address, List<Product> nameProduct) {
@@ -32,6 +39,14 @@ public class Order {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getNameProductCall() {
+        return nameProductCall;
+    }
+
+    public void setNameProductCall(String nameProductCall) {
+        this.nameProductCall = nameProductCall;
     }
 
     public List<Product> getNameProduct() {
