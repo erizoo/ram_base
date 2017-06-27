@@ -9,8 +9,13 @@ public class Order {
     private String email;
     private String address;
     private List<Product> nameProduct;
+    private String error;
 
     public Order() {
+    }
+
+    public Order(String error) {
+        this.error = error;
     }
 
     public Order(String name, String number, String email, String address, List<Product> nameProduct) {
@@ -19,6 +24,14 @@ public class Order {
         this.email = email;
         this.address = address;
         this.nameProduct = nameProduct;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     public List<Product> getNameProduct() {
