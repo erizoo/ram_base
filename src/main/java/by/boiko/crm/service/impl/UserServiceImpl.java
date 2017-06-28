@@ -176,7 +176,9 @@ public class UserServiceImpl implements UserService {
                 String context = getTextFromMimeMultipart((MimeMultipart) content);
                 emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
                 String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
-                orderList.add(new Order(nameToFormatCall(lines[5]), phoneNumberFormatCall(lines[6]),productToFormatCall(lines[8])));
+                orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
+                            addressToFormat(lines[8]), orderToFormat(lines)));
+//                orderList.add(new Order(nameToFormatCall(lines[5]), phoneNumberFormatCall(lines[6]),productToFormatCall(lines[8])));
 //                if (emailSubject.contains("Поступил заказ на звонок")) {
 //                    orderList.add(new Order("gsgs", "dsgsdg","sgsdg"));
 //
