@@ -11,11 +11,14 @@
 
 
 
+
     <mvc:resources mapping="/resources/**" location="/resources/"/>
 
     <context:component-scan base-package="by.boiko.crm"/>
     <mvc:annotation-driven/>
     <tx:annotation-driven/>
+
+
     <bean id="messageSource"
           class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="application"/>
@@ -42,4 +45,5 @@
 
 
     <bean id="userService" class="by.boiko.crm.service.impl.UserServiceImpl"/>
+
 </beans>
