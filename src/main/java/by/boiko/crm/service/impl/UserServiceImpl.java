@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
 
     private List<Order> check(String host, String mail_store_type, String username, String password) {
         try {
-
+            orderList.clear();
             //create properties field
             Properties properties = new Properties();
 
