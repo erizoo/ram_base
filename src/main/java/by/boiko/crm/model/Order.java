@@ -19,9 +19,19 @@ public class Order {
         this.error = error;
     }
 
+
+
     public Order(String name, String number, String nameProductCall) {
         this.name = name;
         this.number = number;
+        this.nameProductCall = nameProductCall;
+    }
+
+    public Order(String name, String number, String email, String address, String nameProductCall) {
+        this.name = name;
+        this.number = number;
+        this.email = email;
+        this.address = address;
         this.nameProductCall = nameProductCall;
     }
 
@@ -31,6 +41,13 @@ public class Order {
         this.email = email;
         this.address = address;
         this.nameProduct = nameProduct;
+    }
+
+    public Order(String name, String number, String email, String nameProductCall) {
+        this.name = name;
+        this.number = number;
+        this.email = email;
+        this.nameProductCall = nameProductCall;
     }
 
     public String getError() {
