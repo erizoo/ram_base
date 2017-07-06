@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private List<String> nameItemListTest = new ArrayList<>();
     private List<String> amountItemListTest = new ArrayList<>();
     private List<String> priceItemListTest = new ArrayList<>();
+    private String dealByName;
 
     @Override
     public List<Category> getAllFromPage(int page) throws IOException {
@@ -142,6 +143,7 @@ public class UserServiceImpl implements UserService {
     private List<Order> check(String host, String mail_store_type, String username, String password) {
         try {
             orderList.clear();
+            emailList.clear();
             //create properties field
             Properties properties = new Properties();
 
@@ -180,23 +182,21 @@ public class UserServiceImpl implements UserService {
 
                     emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
                     String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
-
-                    orderList.add(new Order(nameToFormatDealBy(lines), phoneNumberFormatDealBy(lines), emailToFormatDealBy(lines), addressToFormatDealBy(lines),  lines[20]));
+                    dealByName = "";
+                    for (int y = 0;y <= lines.length - 1; y++){
+                        if(lines[y].contains("руб.")){
+                            dealByName = lines[y-3];
+                            break;
+                        }
+                    }
+                    orderList.add(new Order(nameToFormatDealBy(lines), phoneNumberFormatDealBy(lines),
+                            emailToFormatDealBy(lines), addressToFormatDealBy(lines), orderToFormatDealBy(dealByName, lines)));
 //                    if(context.contains("заказ на звонок")){
 //                        orderList.add(new Order(nameToFormatCall(lines[5]), phoneNumberFormatCall(lines[6]),productToFormatCall(lines[8])));
 //                    }else {
 //                        orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
 //                                addressToFormat(lines[8]), orderToFormat(lines)));
 //                    }
-//                orderList.add(new Order(nameToFormatCall(lines[5]), phoneNumberFormatCall(lines[6]),productToFormatCall(lines[8])));
-//                if (emailSubject.contains("Поступил заказ на звонок")) {
-//                    orderList.add(new Order("gsgs", "dsgsdg","sgsdg"));
-//
-//
-//                } else {
-//                    orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
-//                            addressToFormat(lines[8]), orderToFormat(lines)));
-//                }
                 }
                 emailFolder.close(false);
                 store.close();
@@ -297,8 +297,43 @@ public class UserServiceImpl implements UserService {
         List<String> list = lines.stream().filter(p -> p.contains("Email:")).collect(Collectors.toList());
         String listString = String.join(", ", list);
         String[] itemsString = listString.split(" ");
-        System.out.println(itemsString[1]);
-        return itemsString[1];
+        return "sdg";
+    }
+
+    private List<Product> orderToFormatDealBy(String line, String[] lines) {
+        nameItemList.clear();
+        amountItemList.clear();
+        priceItemList.clear();
+        System.out.println(line);
+        String[] orderItems =  line.split(" ");
+        List<String> linesList = Arrays.asList(lines);
+        List<Product> productList = new ArrayList<>();
+        productList.clear();
+        List<String> list = linesList.stream().filter(p -> p.contains("руб.")).collect(Collectors.toList());
+        for (int i = 0; i <= list.size()-1; i++){
+            System.out.println(list.get(i));
+        }
+        if (list.size() > 2){
+            for (int i = 0;i <= lines.length - 1; i++){
+                if(lines[i].contains("руб.")){
+                    nameItemList.add(lines[i-3]);
+                }
+            }
+            for (int k = 0; k < list.size()-1; k++ ){
+                String str = list.get(k);
+                String[] items = str.split(" ");
+                productList.add(new Product(nameItemList.get(k),items[0], items[3]));
+            }
+        }else{
+            List<String> linesListItem = Arrays.asList(lines);
+            List<String> str = linesListItem.stream().filter(p -> p.contains("руб.")).collect(Collectors.toList());
+            String[] strItems = String.valueOf(str).split(" ");
+            nameItemList.add(line);
+            amountItemList.add(strItems[3]);
+            priceItemList.add(strItems[0].substring(1, strItems[0].length()));
+            productList.add(new Product(nameItemList.get(0),priceItemList.get(0), amountItemList.get(0)));
+        }
+        return productList;
     }
 
     private List<Product> orderToFormat(String[] line) {

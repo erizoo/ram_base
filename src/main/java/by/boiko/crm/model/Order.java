@@ -27,13 +27,6 @@ public class Order {
         this.nameProductCall = nameProductCall;
     }
 
-    public Order(String name, String number, String email, String address, String nameProductCall) {
-        this.name = name;
-        this.number = number;
-        this.email = email;
-        this.address = address;
-        this.nameProductCall = nameProductCall;
-    }
 
     public Order(String name, String number, String email, String address, List<Product> nameProduct) {
         this.name = name;
