@@ -182,21 +182,23 @@ public class UserServiceImpl implements UserService {
 
                     emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
                     String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
-                    dealByName = "";
-                    for (int y = 0;y <= lines.length - 1; y++){
-                        if(lines[y].contains("руб.")){
-                            dealByName = lines[y-3];
-                            break;
+                    if (context.contains("Deal.by")){
+                        dealByName = "";
+                        for (int y = 0;y <= lines.length - 1; y++){
+                            if(lines[y].contains("руб.")){
+                                dealByName = lines[y-3];
+                                break;
+                            }
                         }
+                        orderList.add(new Order(nameToFormatDealBy(lines), phoneNumberFormatDealBy(lines),
+                                emailToFormatDealBy(lines), addressToFormatDealBy(lines), orderToFormatDealBy(dealByName, lines)));
+                    }if(context.contains("поступил заказ на звонок")){
+                        orderList.add(new Order(nameToFormatCall(lines), phoneNumberFormatCall(lines),productToFormatCall(lines)));
                     }
-                    orderList.add(new Order(nameToFormatDealBy(lines), phoneNumberFormatDealBy(lines),
-                            emailToFormatDealBy(lines), addressToFormatDealBy(lines), orderToFormatDealBy(dealByName, lines)));
-//                    if(context.contains("заказ на звонок")){
-//                        orderList.add(new Order(nameToFormatCall(lines[5]), phoneNumberFormatCall(lines[6]),productToFormatCall(lines[8])));
-//                    }else {
-//                        orderList.add(new Order(nameToFormat(lines[5]), phoneNumberFormat(lines[6]), emailToFormat(lines[7]),
-//                                addressToFormat(lines[8]), orderToFormat(lines)));
-//                    }
+                    if (context.contains("UNISHOP.BY - Поступил новый заказ")) {
+                        orderList.add(new Order(nameToFormat(lines), phoneNumberFormat(lines), emailToFormat(lines),
+                                addressToFormat(lines[8]), orderToFormat(lines)));
+                    }
                 }
                 emailFolder.close(false);
                 store.close();
@@ -212,8 +214,11 @@ public class UserServiceImpl implements UserService {
         return orderList;
     }
 
-    private String nameToFormatCall(String line) {
-        String items[] = line.split(" ");
+    private String nameToFormatCall(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> listName = lines.stream().filter(p -> p.contains("Имя покупателя:")).collect(Collectors.toList());
+        String listNameString = String.join(", ", listName);
+        String items[] = listNameString.split(" ");
         return items[2];
     }
 
@@ -225,11 +230,14 @@ public class UserServiceImpl implements UserService {
         return resultItem[1];
     }
 
-    private String phoneNumberFormatCall(String line) {
-        String[] lines = line.split(" ");
-        String[] item = lines[5].split("-");
+    private String phoneNumberFormatCall(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> listPhone = lines.stream().filter(p -> p.contains("Контактный телефон:")).collect(Collectors.toList());
+        String listPhoneString = String.join(", ", listPhone);
+        String[] linesItems = listPhoneString.split(" ");
+        String[] item = linesItems[5].split("-");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(lines[3].substring(1, 4)).append(" ").append(lines[4].substring(1, 3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
+        stringBuilder.append(linesItems[3].substring(1, 4)).append(" ").append(linesItems[4].substring(1, 3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
         return String.valueOf(stringBuilder);
     }
 
@@ -243,20 +251,26 @@ public class UserServiceImpl implements UserService {
         return String.valueOf(stringBuilder);
     }
 
-    private String productToFormatCall(String line) {
-        String[] lines = line.split("\"");
-        return lines[1];
+    private String productToFormatCall(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("Запрос был сделан со страницы")).collect(Collectors.toList());
+        String listString = String.join(", ", list);
+        String[] linesItems = listString.split("\"");
+        return linesItems[1];
     }
 
-    private String nameToFormat(String line) {
-        String[] lines = line.split(" ");
-        if (lines.length <= 3) {
+    private String nameToFormat(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("Имя покупателя:")).collect(Collectors.toList());
+        String listString = String.join(", ", list);
+        String[] linesItems = listString.split(" ");
+        if (linesItems.length <= 3) {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("None").append(" ").append(lines[2]);
+            stringBuilder.append("None").append(" ").append(linesItems[2]);
             return String.valueOf(stringBuilder);
         } else {
             StringBuilder stringBuilder = new StringBuilder();
-            return String.valueOf(stringBuilder.append(lines[2]).append(" ").append(lines[3]));
+            return String.valueOf(stringBuilder.append(linesItems[2]).append(" ").append(linesItems[3]));
         }
 
     }
@@ -286,10 +300,13 @@ public class UserServiceImpl implements UserService {
         return String.valueOf(stringBuilder);
     }
 
-    private String emailToFormat(String line) {
-        String[] lines = line.split(" ");
-        System.out.println(lines[1]);
-        return lines[1];
+    private String emailToFormat(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("Email:")).collect(Collectors.toList());
+        String listString = String.join(", ", list);
+        String[] linesItems = listString.split(" ");
+        System.out.println(linesItems[1]);
+        return linesItems[1];
     }
 
     private String emailToFormatDealBy(String[] line) {
@@ -372,11 +389,14 @@ public class UserServiceImpl implements UserService {
         return productList;
     }
 
-    private String phoneNumberFormat(String line) {
-        String[] lines = line.split(" ");
-        String[] item = lines[4].split("-");
+    private String phoneNumberFormat(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("Контактный телефон:")).collect(Collectors.toList());
+        String listString = String.join(", ", list);
+        String[] linesItems = listString.split(" ");
+        String[] item = linesItems[4].split("-");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(lines[2].substring(1, 4)).append(" ").append(lines[3].substring(1, 3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
+        stringBuilder.append(linesItems[2].substring(1, 4)).append(" ").append(linesItems[3].substring(1, 3)).append(" ").append(item[0]).append(item[1]).append(item[2]);
         System.out.println(stringBuilder);
         return String.valueOf(stringBuilder);
     }
