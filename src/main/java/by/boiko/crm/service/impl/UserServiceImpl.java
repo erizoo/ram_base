@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
 
     private List<Order> check(String host, String mail_store_type, String username, String password) {
         try {
-            orderList.clear();
+
             emailList.clear();
             //create properties field
             Properties properties = new Properties();
@@ -174,13 +174,12 @@ public class UserServiceImpl implements UserService {
                     String emailSubject = message.getSubject();
                     String emailFrom = String.valueOf(message.getFrom()[0]);
                     String[] arrayString = emailFrom.split("<");
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(arrayString[1].substring(0, arrayString[1].length() - 1));
-                    emailFrom = String.valueOf(stringBuilder);
+//                    StringBuilder stringBuilder = new StringBuilder();
+//                    stringBuilder.append(arrayString[1].substring(0, arrayString[1].length() - 1));
+//                    emailFrom = String.valueOf(stringBuilder);
                     content = message.getContent();
                     String context = getTextFromMimeMultipart((MimeMultipart) content);
-
-                    emailList.add(new Email(emailNumber, emailSubject, emailFrom, context));
+                    emailList.add(new Email(emailNumber, "sdgsd", "dsgsg", context));
                     String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
                     if (context.contains("Deal.by")){
                         dealByName = "";
@@ -191,13 +190,13 @@ public class UserServiceImpl implements UserService {
                             }
                         }
                         orderList.add(new Order(nameToFormatDealBy(lines), phoneNumberFormatDealBy(lines),
-                                emailToFormatDealBy(lines), addressToFormatDealBy(lines), orderToFormatDealBy(dealByName, lines)));
+                                emailToFormatDealBy(lines), addressToFormatDealBy(lines), orderToFormatDealBy(dealByName, lines), "DEAL.BY"));
                     }if(context.contains("поступил заказ на звонок")){
-                        orderList.add(new Order(nameToFormatCall(lines), phoneNumberFormatCall(lines),productToFormatCall(lines)));
+                        orderList.add(new Order(nameToFormatCall(lines), phoneNumberFormatCall(lines),productToFormatCall(lines), "UNISHOP.BY"));
                     }
                     if (context.contains("UNISHOP.BY - Поступил новый заказ")) {
                         orderList.add(new Order(nameToFormat(lines), phoneNumberFormat(lines), emailToFormat(lines),
-                                addressToFormat(lines[8]), orderToFormat(lines)));
+                                addressToFormat(lines[8]), orderToFormat(lines),"UNISHOP.BY"));
                     }
                 }
                 emailFolder.close(false);
@@ -224,7 +223,7 @@ public class UserServiceImpl implements UserService {
 
     private String nameToFormatDealBy(String[] line) {
         List<String> lines = Arrays.asList(line);
-        List<String> listName = lines.stream().filter(p -> p.contains("ФИО")).collect(Collectors.toList());
+        List<String> listName = lines.stream().filter(p -> p.contains("ФИО:")).collect(Collectors.toList());
         String listNameString = String.join(", ", listName);
         String[] resultItem = listNameString.split(" ");
         return resultItem[1];
@@ -247,7 +246,11 @@ public class UserServiceImpl implements UserService {
         String listString = String.join(", ", list);
         String[] listItem = listString.split(" ");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(listItem[1].substring(1,4)).append(" ").append(listItem[1].substring(4,6)).append(" ").append(listItem[1].substring(6,13));
+        if(listItem[1].contains("+7")){
+            stringBuilder.append(listItem[1]);
+        }else {
+            stringBuilder.append(listItem[1].substring(1,4)).append(" ").append(listItem[1].substring(4,6)).append(" ").append(listItem[1].substring(6,13));
+        }
         return String.valueOf(stringBuilder);
     }
 
@@ -296,7 +299,11 @@ public class UserServiceImpl implements UserService {
         String listAddressString = String.join(", ", listAddress);
         String [] stringsItems = listAddressString.split(":");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(strItems[1]).append(",").append(stringsItems[1]);
+        if (listAddress.size() == 0 | listCity.size() == 0){
+            stringBuilder.append("None");
+        }else{
+            stringBuilder.append(strItems[1]).append(",").append(stringsItems[1]);
+        }
         return String.valueOf(stringBuilder);
     }
 
@@ -407,6 +414,17 @@ public class UserServiceImpl implements UserService {
         stringBuilder.append(lines[1]).append("/").append("0").append(LocalDate.now().getMonth().getValue()).append("/").append(lines[3]).append(" ").append(lines[5]);
         System.out.println(stringBuilder);
         return String.valueOf(stringBuilder);
+    }
+
+    private String getTextFromMessage(Message message) throws MessagingException, IOException {
+        String result = "";
+        if (message.isMimeType("text/plain")) {
+            result = message.getContent().toString();
+        } else if (message.isMimeType("multipart/*")) {
+            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+            result = getTextFromMimeMultipart(mimeMultipart);
+        }
+        return result;
     }
 
     private String getTextFromMimeMultipart(

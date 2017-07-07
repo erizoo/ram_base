@@ -11,6 +11,7 @@ public class Order {
     private List<Product> nameProduct;
     private String error;
     private String nameProductCall;
+    private String source;
 
     public Order() {
     }
@@ -21,26 +22,37 @@ public class Order {
 
 
 
-    public Order(String name, String number, String nameProductCall) {
+    public Order(String name, String number, String nameProductCall, String source) {
         this.name = name;
         this.number = number;
         this.nameProductCall = nameProductCall;
+        this.source = source;
     }
 
 
-    public Order(String name, String number, String email, String address, List<Product> nameProduct) {
+    public Order(String name, String number, String email, String address, List<Product> nameProduct, String source) {
         this.name = name;
         this.number = number;
         this.email = email;
         this.address = address;
         this.nameProduct = nameProduct;
+        this.source = source;
     }
 
-    public Order(String name, String number, String email, String nameProductCall) {
+    public Order(String name, String number, String email, String nameProductCall, String source) {
         this.name = name;
         this.number = number;
         this.email = email;
         this.nameProductCall = nameProductCall;
+        this.source = source;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public String getError() {
