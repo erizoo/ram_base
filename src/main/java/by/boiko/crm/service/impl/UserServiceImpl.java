@@ -181,6 +181,9 @@ public class UserServiceImpl implements UserService {
                     String context = getTextFromMimeMultipart((MimeMultipart) content);
                     emailList.add(new Email(emailNumber, "sdgsd", "dsgsg", context));
                     String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
+                    if (context.contains("Changed rates")){
+                        orderList.add(new Order("Error retrieving data"));
+                    }
                     if (context.contains("Deal.by")){
                         dealByName = "";
                         for (int y = 0;y <= lines.length - 1; y++){
@@ -197,6 +200,8 @@ public class UserServiceImpl implements UserService {
                     if (context.contains("UNISHOP.BY - Поступил новый заказ")) {
                         orderList.add(new Order(nameToFormat(lines), phoneNumberFormat(lines), emailToFormat(lines),
                                 addressToFormat(lines[8]), orderToFormat(lines),"UNISHOP.BY"));
+                    }else{
+                        orderList.add(new Order("Spam"));
                     }
                 }
                 emailFolder.close(false);
@@ -346,16 +351,29 @@ public class UserServiceImpl implements UserService {
             for (int k = 0; k < list.size()-1; k++ ){
                 String str = list.get(k);
                 String[] items = str.split(" ");
-                productList.add(new Product(nameItemList.get(k),items[0], items[3]));
+                if (items.length > 8){
+                    String price = items[0] + "" + items[1];
+                    productList.add(new Product(nameItemList.get(k),price, items[4]));
+                }else {
+                    productList.add(new Product(nameItemList.get(k),items[0], items[3]));
+                }
             }
         }else{
             List<String> linesListItem = Arrays.asList(lines);
             List<String> str = linesListItem.stream().filter(p -> p.contains("руб.")).collect(Collectors.toList());
             String[] strItems = String.valueOf(str).split(" ");
-            nameItemList.add(line);
-            amountItemList.add(strItems[3]);
-            priceItemList.add(strItems[0].substring(1, strItems[0].length()));
-            productList.add(new Product(nameItemList.get(0),priceItemList.get(0), amountItemList.get(0)));
+            if (strItems.length > 8){
+                String price = strItems[0] + "" + strItems[1];
+                nameItemList.add(line);
+                amountItemList.add( strItems[4]);
+                priceItemList.add(price.substring(1, price.length()-1));
+                productList.add(new Product(nameItemList.get(0),priceItemList.get(0), amountItemList.get(0)));
+            }else {
+                nameItemList.add(line);
+                amountItemList.add(strItems[3]);
+                priceItemList.add(strItems[0].substring(1, strItems[0].length()));
+                productList.add(new Product(nameItemList.get(0),priceItemList.get(0), amountItemList.get(0)));
+            }
         }
         return productList;
     }
