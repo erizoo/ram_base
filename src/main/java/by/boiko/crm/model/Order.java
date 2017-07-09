@@ -20,7 +20,10 @@ public class Order {
         this.error = error;
     }
 
-
+    public Order(String name, String number) {
+        this.name = name;
+        this.number = number;
+    }
 
     public Order(String name, String number, String nameProductCall, String source) {
         this.name = name;

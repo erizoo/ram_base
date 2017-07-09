@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private HSSFWorkbook book;
-    private final String MAIL_STORE_TYPE = "pop.gmail.com";
-    private final String USERNAME = "erizosashka@gmail.com";
-    private final String PASSWORD = "Alex20968";
+    private static final String MAIL_STORE_TYPE = "pop.gmail.com";
+    private static final String USERNAME = "erizosashka@gmail.com";
+    private static final String PASSWORD = "Alex20968";
     private List<Email> emailList = new ArrayList<>();
     private List<Order> orderList = new ArrayList<>();
     private List<String> nameItemList = new ArrayList<>();
@@ -181,8 +181,8 @@ public class UserServiceImpl implements UserService {
                     String context = getTextFromMimeMultipart((MimeMultipart) content);
                     emailList.add(new Email(emailNumber, "sdgsd", "dsgsg", context));
                     String lines[] = emailList.get(i).getSubject().split("\\r?\\n");
-                    if (context.contains("Changed rates")){
-                        orderList.add(new Order("Error retrieving data"));
+                    if (context.contains("Отложенный звонок с сайта")){
+                        orderList.add(new Order("Отложенный звонок с сайта", phoneNumberFormatDeferredCall(lines)));
                     }
                     if (context.contains("Deal.by")){
                         dealByName = "";
@@ -216,6 +216,19 @@ public class UserServiceImpl implements UserService {
             return orderList;
         }
         return orderList;
+    }
+
+    private String phoneNumberFormatDeferredCall(String [] lines) {
+        List<String> linesList = Arrays.asList(lines);
+        List<String> listDeferredCall = linesList.stream().filter(p -> p.contains("Отложенный звонок с сайта")).collect(Collectors.toList());
+        String listDeferredCallString = String.join(", ", listDeferredCall);
+        String[] items = listDeferredCallString.split(" ");
+        String[] itemsHooks = items[7].split("\\)");
+        String[] itemsNumbers = itemsHooks[1].split("-");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("375").append(" ").append(itemsHooks[0].substring(1,itemsHooks[0].length())).append(" ").append(itemsNumbers[0]).append(itemsNumbers[1]).append(itemsNumbers[2]);
+        System.out.println(stringBuilder);
+        return String.valueOf(stringBuilder);
     }
 
     private String nameToFormatCall(String[] line) {
