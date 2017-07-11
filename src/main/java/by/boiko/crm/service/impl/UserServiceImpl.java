@@ -180,7 +180,6 @@ public class UserServiceImpl implements UserService {
                     content = message.getContent();
                     String context = getTextFromMimeMultipart((MimeMultipart) content);
                     emailList.add(new Email(emailNumber, "sdgsd", "dsgsg", context));
-                    System.out.println(context);
                     String lines[] = emailList.get(i).getSubject().split("[\\r\\n]+", -1);
                     if (context.contains("Отложенный звонок с сайта")){
                         orderList.add(new Order("Отложенный звонок с сайта", phoneNumberFormatDeferredCall(lines)));
@@ -189,11 +188,11 @@ public class UserServiceImpl implements UserService {
                         dealByName = "";
                         for (int y = 0;y <= lines.length - 1; y++){
                             if(lines[y].contains("руб.")){
-                                dealByName = lines[y-2];
+                                dealByName = lines[y-2].substring(1, lines[y-2].length()-4);
                                 break;
                             }
                         }
-// orderList.add(new Order("Error retrieving data"));
+                        // orderList.add(new Order("Error retrieving data"));
                         orderList.add(new Order(nameToFormatDealBy(lines), phoneNumberFormatDealBy(lines),
                                 emailToFormatDealBy(lines), addressToFormatDealBy(lines), orderToFormatDealBy(dealByName, lines), "DEAL.BY"));
                     }if(context.contains("поступил заказ на звонок")){
@@ -220,15 +219,12 @@ public class UserServiceImpl implements UserService {
 
     private String phoneNumberFormatDeferredCall(String [] lines) {
         List<String> linesList = Arrays.asList(lines);
-        List<String> listDeferredCall = linesList.stream().filter(p -> p.contains("Отложенный звонок с сайта")).collect(Collectors.toList());
-        String listDeferredCallString = String.join(", ", listDeferredCall);
-        String[] items = listDeferredCallString.split(" ");
-        String[] itemsHooks = items[7].split("\\)");
+        String[] itemsHooks = linesList.get(2).split("\\)");
         String[] itemsNumbers = itemsHooks[1].split("-");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("375").append(" ").append(itemsHooks[0].substring(1,itemsHooks[0].length())).append(" ").append(itemsNumbers[0]).append(itemsNumbers[1]).append(itemsNumbers[2]);
-        System.out.println(stringBuilder);
-        return String.valueOf(stringBuilder);
+        System.out.println(stringBuilder.substring(0, stringBuilder.length()-9));
+        return stringBuilder.substring(0, stringBuilder.length()-9);
     }
 
     private String nameToFormatCall(String[] line) {
@@ -347,7 +343,6 @@ public class UserServiceImpl implements UserService {
         nameItemList.clear();
         amountItemList.clear();
         priceItemList.clear();
-        System.out.println(line);
         String[] orderItems =  line.split(" ");
         List<String> linesList = Arrays.asList(lines);
         List<Product> productList = new ArrayList<>();
@@ -380,7 +375,7 @@ public class UserServiceImpl implements UserService {
                 String price = strItems[0] + "" + strItems[1];
                 nameItemList.add(line);
                 amountItemList.add( strItems[3]);
-                priceItemList.add(price.substring(1, price.length()-1));
+                priceItemList.add(price.substring(1, price.length()-4));
                 productList.add(new Product(nameItemList.get(0),priceItemList.get(0), amountItemList.get(0)));
             }else {
                 nameItemList.add(line);
