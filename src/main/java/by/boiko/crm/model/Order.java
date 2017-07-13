@@ -12,6 +12,7 @@ public class Order {
     private String error;
     private String nameProductCall;
     private String source;
+    private String errorName;
 
     public Order() {
     }
@@ -48,6 +49,16 @@ public class Order {
         this.email = email;
         this.nameProductCall = nameProductCall;
         this.source = source;
+    }
+
+
+
+    public String getErrorName() {
+        return errorName;
+    }
+
+    public void setErrorName(String errorName) {
+        this.errorName = errorName;
     }
 
     public String getSource() {

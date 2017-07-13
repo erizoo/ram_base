@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private List<String> amountItemListTest = new ArrayList<>();
     private List<String> priceItemListTest = new ArrayList<>();
     private String dealByName;
+    private Message message;
 
     @Override
     public List<Category> getAllFromPage(int page) throws IOException {
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Order> getEmails() {
+    public List<Order> getEmails() throws MessagingException {
         return check(MAIL_STORE_TYPE, MAIL_STORE_TYPE, USERNAME, PASSWORD);
     }
 
@@ -140,7 +141,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private List<Order> check(String host, String mail_store_type, String username, String password) {
+    private List<Order> check(String host, String mail_store_type, String username, String password) throws MessagingException {
         try {
             orderList.clear();
             emailList.clear();
@@ -169,7 +170,7 @@ public class UserServiceImpl implements UserService {
                 System.out.println("messages.length---" + messages.length);
                 Object content = null;
                 for (int i = 0, n = messages.length; i < n; i++) {
-                    Message message = messages[i];
+                    message = messages[i];
                     int emailNumber = i + 1;
                     String emailSubject = message.getSubject();
                     String emailFrom = String.valueOf(message.getFrom()[0]);
@@ -210,7 +211,7 @@ public class UserServiceImpl implements UserService {
 
         } catch (Exception e) {
             orderList.clear();
-            orderList.add(new Order("Error retrieving data"));
+            orderList.add(new Order("Error retrieving data" + "," + " " + message.getSubject()));
             e.printStackTrace();
             return orderList;
         }
@@ -218,13 +219,18 @@ public class UserServiceImpl implements UserService {
     }
 
     private String phoneNumberFormatDeferredCall(String [] lines) {
-        List<String> linesList = Arrays.asList(lines);
-        String[] itemsHooks = linesList.get(2).split("\\)");
-        String[] itemsNumbers = itemsHooks[1].split("-");
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("375").append(" ").append(itemsHooks[0].substring(1,itemsHooks[0].length())).append(" ").append(itemsNumbers[0]).append(itemsNumbers[1]).append(itemsNumbers[2]);
-        System.out.println(stringBuilder.substring(0, stringBuilder.length()-9));
-        return stringBuilder.substring(0, stringBuilder.length()-9);
+        try{
+            List<String> linesList = Arrays.asList(lines);
+            List<String> item = linesList.stream().filter(p -> p.contains("Отложенный звонок с сайта ram.by на номер")).collect(Collectors.toList());
+            String[] items = item.get(0).split(" ");
+            String[] itemsNumbers = items[7].split("-");
+            String[] itemsHooks = itemsNumbers[0].split("\\)");
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(itemsHooks[0].substring(1,itemsHooks[0].length())).append(itemsHooks[1]).append(itemsNumbers[1]).append(itemsNumbers[2]);
+            return String.valueOf(stringBuilder);
+        }catch (Exception e){
+            return "Error";
+        }
     }
 
     private String nameToFormatCall(String[] line) {

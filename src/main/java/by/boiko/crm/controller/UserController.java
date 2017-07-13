@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class UserController {
 
     @GetMapping(value = "/email")
     @ResponseBody
-    public List<Order> getAllEmails(){
+    public List<Order> getAllEmails() throws MessagingException {
         return userService.getEmails();
     }
 
