@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
             String[] itemsNumbers = items[7].split("-");
             String[] itemsHooks = itemsNumbers[0].split("\\)");
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(itemsHooks[0].substring(1,itemsHooks[0].length())).append(itemsHooks[1]).append(itemsNumbers[1]).append(itemsNumbers[2]);
+            stringBuilder.append("375").append(" ").append(itemsHooks[0].substring(1,itemsHooks[0].length())).append(" ").append(itemsHooks[1]).append(itemsNumbers[1]).append(itemsNumbers[2]);
             return String.valueOf(stringBuilder);
         }catch (Exception e){
             return "Error";
