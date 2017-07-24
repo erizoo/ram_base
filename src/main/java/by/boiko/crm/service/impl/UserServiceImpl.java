@@ -199,9 +199,9 @@ public class UserServiceImpl implements UserService {
                     }if(context.contains("поступил заказ на звонок")){
                         orderList.add(new Order(nameToFormatCall(lines), phoneNumberFormatCall(lines),productToFormatCall(lines), "UNISHOP.BY"));
                     }
-                    if (context.contains("UNISHOP.BY - Поступил новый заказ")) {
+                    if (context.contains("поступил новый заказ!")) {
                         orderList.add(new Order(nameToFormat(lines), phoneNumberFormat(lines), emailToFormat(lines),
-                                addressToFormat(lines[8]), orderToFormat(lines),"UNISHOP.BY"));
+                                addressToFormat(lines), orderToFormat(lines),"UNISHOP.BY"));
                     }
                 }
                 emailFolder.close(false);
@@ -303,17 +303,13 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private String addressToFormat(String line) {
-        String[] lines = line.split(" ");
-        final List<String> list = new ArrayList<String>();
-        Collections.addAll(list, lines);
+    private String addressToFormat(String[] line) {
+        List<String> lines = Arrays.asList(line);
+        List<String> list = lines.stream().filter(p -> p.contains("Адрес доставки:")).collect(Collectors.toList());
         list.remove("Адрес");
         list.remove("доставки:");
-        lines = list.toArray(new String[list.size()]);
-        String item = Arrays.toString(lines);
-        String result = item.substring(1, item.length() - 1);
-        System.out.println(result);
-        return result;
+        String [] item = list.get(0).split(":");
+        return item[1];
     }
     private String addressToFormatDealBy(String[] line) {
         int numberElementArray = 0;
