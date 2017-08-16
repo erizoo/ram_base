@@ -26,6 +26,12 @@ public class Order {
         this.number = number;
     }
 
+    public Order(String name, String email, String source ) {
+        this.name = name;
+        this.email = email;
+        this.source = source;
+    }
+
     public Order(String name, String number, String nameProductCall, String source) {
         this.name = name;
         this.number = number;

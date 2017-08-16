@@ -182,10 +182,13 @@ public class UserServiceImpl implements UserService {
                     String context = getTextFromMimeMultipart((MimeMultipart) content);
                     emailList.add(new Email(emailNumber, "sdgsd", "dsgsg", context));
                     String lines[] = emailList.get(i).getSubject().split("[\\r\\n]+", -1);
+                    if (context.contains("покупатель создал новый чат")){
+                        orderList.add(new Order(nameToFormatDealByMessage(lines), emailToFormatDealBy(lines), "DEAL.BY"));
+                    }
                     if (context.contains("Отложенный звонок с сайта")){
                         orderList.add(new Order("Отложенный звонок с сайта", phoneNumberFormatDeferredCall(lines)));
                     }
-                    if (context.contains("Deal.by")){
+                    if (context.contains("оформил заказ у вашей компании «Интернет магазин RAMBY")){
                         dealByName = "";
                         for (int y = 0;y <= lines.length - 1; y++){
                             if(lines[y].contains("руб.")){
@@ -251,6 +254,15 @@ public class UserServiceImpl implements UserService {
         }
         return line[numberElementArray];
     }
+
+    private String nameToFormatDealByMessage(String[] line){
+        List<String> lines = Arrays.asList(line);
+        List<String> listName = lines.stream().filter(p -> p.contains("Вам писал:")).collect(Collectors.toList());
+        String listNameString = String.join(", ", listName);
+        String items[] = listNameString.split(" ");
+        return items[2];
+    }
+
     private String phoneNumberFormatCall(String[] line) {
         List<String> lines = Arrays.asList(line);
         List<String> listPhone = lines.stream().filter(p -> p.contains("Контактный телефон:")).collect(Collectors.toList());
@@ -338,7 +350,7 @@ public class UserServiceImpl implements UserService {
         List<String> list = lines.stream().filter(p -> p.contains("Email:")).collect(Collectors.toList());
         String listString = String.join(", ", list);
         String[] itemsString = listString.split(" ");
-        return "sdg";
+        return itemsString[1];
     }
 
     private List<Product> orderToFormatDealBy(String line, String[] lines) {
