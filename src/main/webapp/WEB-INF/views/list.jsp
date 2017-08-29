@@ -10,7 +10,7 @@
 <SetEnv downgrade-1.0></SetEnv>
 <html lang="ru">
 <head>
-    <jsp:include page="../fragments/header.jsp"/>
+    <jsp:include page="fragments/header.jsp"/>
 </head>
 <body>
 <div class="container">
@@ -52,6 +52,6 @@
         </table>
     </div>
 </div>
-<jsp:include page="../fragments/footer.jsp"/>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>

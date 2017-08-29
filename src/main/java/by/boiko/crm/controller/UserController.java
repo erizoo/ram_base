@@ -2,7 +2,6 @@ package by.boiko.crm.controller;
 
 
 import by.boiko.crm.model.Category;
-import by.boiko.crm.model.Email;
 import by.boiko.crm.model.Order;
 import by.boiko.crm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,12 @@ import java.util.List;
 @Controller
 public class UserController {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping(value = "/")
     public ModelAndView getIndexPage() {

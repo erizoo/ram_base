@@ -15,9 +15,14 @@
 <div class="container" style="width: 300px;">
     <spring:url value="/start" var="loginUrl"/>
     <spring:url value="/email" var="loginUrlGmail"/>
+    <spring:url value="/sales" var="salesPage"/>
     <form action="${loginUrl}" method="post">
         <br>
         <button class="btn btn-lg btn-danger btn-block" onclick="location.href='${loginUrl}'">Парсер Маркет</button>
+    </form>
+    <form action="${salesPage}" method="get">
+        <br>
+        <button class="btn btn-lg btn-danger btn-block" onclick="location.href='${salesPage}'">Продажи</button>
     </form>
     <form action="${loginUrlGmail}" method="get">
         <br>
