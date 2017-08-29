@@ -21,7 +21,7 @@ public class SalesServiceImpl implements SalesService {
     }
 
     @Override
-    public List<Goods> getGoods() {
-        return goodsDao.loadGoods();
+    public List<Goods> getGoods(int category) {
+        return goodsDao.loadGoods(category);
     }
 }

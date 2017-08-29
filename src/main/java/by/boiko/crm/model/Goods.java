@@ -3,7 +3,7 @@ package by.boiko.crm.model;
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity
+@Entity(name = "Goods")
 @Table(name = "goods")
 public class Goods implements Serializable {
 

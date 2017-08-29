@@ -6,22 +6,24 @@
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
     <link rel="stylesheet" href="${contextPath}/resources/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="${contextPath}/resources/css/sales.css"/>
-    <script src="${contextPath}/resources/js/jquery-3.2.1.min.js"></script>
+    <script src="${contextPath}/resources/js/jquery-3.1.1.js"></script>
     <title>Title</title>
 </head>
 <body>
-<div class="tree well" style="width: 15%; height: 100%;">
+<div class="tree well" style="width: 15%; height: 100%; float: left">
     <ul style="padding-left: 1%">
         <li>
             <span><i class="icon-folder-open"></i> Товары для детей </span>
             <ul>
                 <li>
                     <a href="list.jsp">
-                        <span onclick="playingSet(); return false">Игровые наборы</span>
+                        <span onclick="playingSet(1); return false">Игровые наборы</span>
                     </a>
                 </li>
                 <li>
-                    <span><i class="icon-minus-sign"></i> Радиоуправляемые модели </span>
+                    <a href="list.jsp">
+                        <span onclick="playingSet(2); return false">Радиоуправляемые модели</span>
+                    </a>
                 </li>
                 <li>
                     <span><i class="icon-minus-sign"></i> Разное </span>
@@ -77,17 +79,38 @@
         <%--</li>--%>
     </ul>
 </div>
+ <div style="float: left; width: 85%" >
+     <table class="table" id="mytab" >
 
+         <tbody id="mybody">
+
+         </tbody>
+     </table>
+ </div>
 <script>
-    function playingSet() {
+    function playingSet(category) {
         $.ajax({
             type: "GET",
-            url: "/get_goods",
+            url: "/get_goods/" + category,
 
             dataType: "text",
             success: function (data) {
                 var obj = JSON.parse(data);
                 console.log(data);
+                $('#mybody').html('');
+                for (var i = 0; i < 13; i++) {
+                    newrow = document.all.mybody.insertRow();
+                    newcellSku = newrow.insertCell(0);
+                    newcellSku.style.width = 50;
+                    newcellSku.innerText = obj[i].sku;
+                    newcellName = newrow.insertCell(1);
+                    newcellName.style.width = 1200;
+                    newcellName.style.marginLeft = 10;
+                    newcellName.innerText = obj[i].name;
+                    newcellPrice = newrow.insertCell(2);
+                    newcellPrice.style.marginRight = 10;
+                    newcellPrice.innerText = obj[i].price;
+                }
             }
         });
     }

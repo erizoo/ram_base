@@ -74,7 +74,7 @@ public class ApplicationConfig {
     public LocalSessionFactoryBean sessionFactory() throws SQLException, URISyntaxException {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("by.boiko.model");
+        sessionFactory.setPackagesToScan("by.boiko.crm.model");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

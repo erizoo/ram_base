@@ -15,7 +15,7 @@ public class GoodsDaoImpl implements GoodsDao {
     private SessionFactory sessionFactory;
 
     @Override
-    public List loadGoods() {
-        return sessionFactory.getCurrentSession().createQuery("from Goods").list();
+    public List loadGoods(int category) {
+        return sessionFactory.getCurrentSession().createQuery("from Goods u where category = :category").setParameter("category", category).list();
     }
 }

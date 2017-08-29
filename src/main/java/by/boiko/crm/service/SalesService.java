@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SalesService {
 
-    List<Goods> getGoods();
+    List<Goods> getGoods(int category);
 }

@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface GoodsDao {
 
-    List loadGoods();
+    List loadGoods(int category);
 }
