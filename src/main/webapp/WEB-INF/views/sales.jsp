@@ -153,7 +153,6 @@
     </table>
 </div>
 <script>
-    counter = 0;
     function playingSet(category) {
         $.ajax({
             type: "GET",
@@ -222,13 +221,29 @@
             newcellSku.innerText = myArray[i].sku;
             newcellName = newrow.insertCell(1);
             newcellName.innerText = myArray[i].name;
-            newcellAmount = newrow.insertCell(2);
+            newcellMinus = newrow.insertCell(2);
+            newcellMinus.style.width = 5;
+            newcellMinus.style.paddingRight = 0;
+            newcellMinus.id = i;
+            newcellMinus.innerHTML = newcellMinus.innerHTML + " <button id='minus'  type='button' data-type='minus' class='btn btn-default btn-number' onclick=''>-</button><br>";
+            newcellMinus.addEventListener('click', function () {
+                    return function () {
+                        myArray[this.id].amount--;
+                    }
+                }
+            );
+            newcellAmount = newrow.insertCell(3);
+            newcellAmount.style.width = 5;
             newcellAmount.innerText = myArray[i].amount;
-            newcellPrice = newrow.insertCell(3);
+            newcellPlus = newrow.insertCell(4);
+            newcellPlus.style.width = 5;
+            newcellMinus.style.paddingLeft = 0;
+            newcellPlus.innerHTML = newcellPlus.innerHTML + " <button type='button' data-type='plus' class='btn btn-default btn-number' >+</button><br>";
+            newcellPrice = newrow.insertCell(5);
             newcellPrice.innerText = myArray[i].priceValue;
-//            counter++;
         }
     }
+
 
     $(function () {
         $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
