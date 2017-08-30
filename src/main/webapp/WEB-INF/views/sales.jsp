@@ -250,9 +250,10 @@
             newcellPlus.innerHTML = newcellPlus.innerHTML + " <button type='button' data-type='plus' class='btn btn-default btn-number' >+</button><br>";
             newcellPlus.addEventListener('click', function () {
                     return function () {
+                        console.log(this.id);
                         myArray[this.id].amount++;
-                        $('.this.i').on('click', function () {
-                            $('td#this.i').remove();
+                        $('.this.id').on('click', function () {
+                            $('td#this.id').remove();
                         });
                         newcellAmount.innerText = myArray[this.id].amount;
                     }
