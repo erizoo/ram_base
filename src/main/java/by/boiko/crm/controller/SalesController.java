@@ -32,4 +32,9 @@ public class SalesController {
     public List<Goods> getGoodsForCategory(@PathVariable(value = "category") int category) {
         return salesService.getGoods(category);
     }
+
+    @GetMapping(value = "/get_count/{category}")
+    public int getCount(@PathVariable(value = "category") int category) {
+        return salesService.getCount(category);
+    }
 }

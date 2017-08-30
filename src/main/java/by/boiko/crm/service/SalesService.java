@@ -8,4 +8,6 @@ import java.util.List;
 public interface SalesService {
 
     List<Goods> getGoods(int category);
+
+    int getCount(int category);
 }

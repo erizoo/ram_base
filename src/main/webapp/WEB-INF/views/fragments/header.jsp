@@ -20,13 +20,23 @@
 </head>
 <title>VetClient</title>
 
-<spring:url value="/categories" var="loginUrl"/>
+<spring:url value="/sales" var="salesUrl"/>
+<spring:url value="/load_price" var="loadPrice"/>
+<spring:url value="/price" var="price"/>
 
-
-<nav class="navbar navbar-light bg-faded">
+<nav class="navbar navbar-light bg-faded" >
 	<ul class="nav navbar-nav">
-		<li class="nav-item active">
-			<a class="nav-link" onclick="location.href='${loginUrl}'" >Меню категорий<span class="sr-only">(current)</span></a>
+		<li class="nav-item active" style="margin-left: 5%">
+			<a class="nav-link" onclick="location.href='${loginUrl}'" >Курс 1.95<span class="sr-only">(current)</span></a>
+		</li>
+		<li class="nav-item active" style="margin-left: 7%">
+			<a class="nav-link" onclick="location.href='${salesUrl}'" >Продажи<span class="sr-only">(current)</span></a>
+		</li>
+		<li class="nav-item active" style="margin-right: 10%">
+			<a class="nav-link" onclick="location.href='${loadPrice}'" >Загрузить прайс<span class="sr-only">(current)</span></a>
+		</li>
+		<li class="nav-item active" style="margin-right: 10%">
+			<a class="nav-link" onclick="location.href='${price}'" >прайс<span class="sr-only">(current)</span></a>
 		</li>
 	</ul>
 </nav>
