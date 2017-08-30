@@ -101,7 +101,7 @@
     </table>
 </div>
 
-<div id="order" style=" width: 85%; height: 12%; margin-left: 15%; display: block; margin-top: 26%; position: relative">
+<div id="order" style=" width: 85%; height: 12%; margin-left: 15%; margin-top: 26%; position: relative">
     <hr>
     <div class="form-group ">
         <div class="col-sm-2">
@@ -147,12 +147,13 @@
 <div style="float: left; display: block; width: 85%; height: 35%; overflow: scroll">
     <table class="table" id="tableOrder">
 
-        <tbody id="bodyOrder">
+        <tbody id="bodyOrder" >
 
         </tbody>
     </table>
 </div>
 <script>
+    myArray = [];
     function playingSet(category) {
         $.ajax({
             type: "GET",
@@ -162,11 +163,12 @@
                 var obj = JSON.parse(data);
                 var count = Object.keys(obj).length;
                 $('#mybody').html('');
-                myArray = [];
                 for (var i = 0; i < count; i++) {
                     newrow = document.all.mybody.insertRow();
+                    newrow.style.height = 10;
                     newcellSku = newrow.insertCell(0);
                     newcellSku.style.width = 50;
+                    newcellSku.style.height = 10;
                     newcellSku.innerText = obj[i].sku;
                     newcellName = newrow.insertCell(1);
                     newcellName.style.width = 1200;
@@ -229,16 +231,34 @@
             newcellMinus.addEventListener('click', function () {
                     return function () {
                         myArray[this.id].amount--;
+                        $('.this.i').on('click', function () {
+                            $('td#this.i').remove();
+                        });
+                        newcellAmount.innerText = myArray[this.id].amount;
                     }
                 }
+                (newcellMinus)
             );
             newcellAmount = newrow.insertCell(3);
+            newcellAmount.id = this.i;
             newcellAmount.style.width = 5;
             newcellAmount.innerText = myArray[i].amount;
             newcellPlus = newrow.insertCell(4);
             newcellPlus.style.width = 5;
-            newcellMinus.style.paddingLeft = 0;
+            newcellPlus.style.paddingLeft = 0;
+            newcellPlus.id = i;
             newcellPlus.innerHTML = newcellPlus.innerHTML + " <button type='button' data-type='plus' class='btn btn-default btn-number' >+</button><br>";
+            newcellPlus.addEventListener('click', function () {
+                    return function () {
+                        myArray[this.id].amount++;
+                        $('.this.i').on('click', function () {
+                            $('td#this.i').remove();
+                        });
+                        newcellAmount.innerText = myArray[this.id].amount;
+                    }
+                }
+                (newcellPlus)
+            );
             newcellPrice = newrow.insertCell(5);
             newcellPrice.innerText = myArray[i].priceValue;
         }
